@@ -30,6 +30,7 @@ class Scrape(webdriver.Chrome):
                         'Funeral Home Street Address', 'Funeral Home City', 'Funeral Home State', 'Funeral Home ZIP Code', 'Upcoming Service Name', 'Upcoming Service Date', 'Upcoming Service City', 'List of Next of Kin', "Link to the deceased person's obituary"]
         self.implicitly_wait(const.IMPLICIT_WAIT)
         self.df = pd.DataFrame([], columns=self.headers)
+        self.keywords = pd.read_csv('keywords.csv')
 
     # Loading the frist page
     def land_on_first_page(self):
@@ -289,12 +290,11 @@ class Scrape(webdriver.Chrome):
                 upcoming_service_name = ''
                 upcoming_service_date = ''
 
-            keywords = ['Preceded', 'Survived', 'Wife', 'Husband', 'Mother', 'Father', 'Sister', 'Brother', 'civil partner', 'daughter', 'son', 'parents', 'grandparent', 'grandchild', 'parent-in-law', 'son-in-law', 'daughter-in-law', 'sister-in-law', 'brother-in-law', 'stepmother', 'step mother', 'stepfather', 'step father', 'stepchild', 'step child', 'stepsister', 'step sister',
-                        'stepbrother', 'step brother', 'foster child', 'guardian', 'domestic partner', 'fiancé', 'fiancée', 'bride', 'dad', 'mom', 'grandchild', 'grandchildren', 'granddaughter', 'grandfather', 'granddad', 'grandpa', 'grandmother', 'grandma', 'grandson', 'great-grandparents', 'groom', 'half-brother', 'mother-in-law', 'mum', 'mummy', 'nephew', 'niece', 'twin', 'twin-brother', 'siblings']
+            
             lst = []
-            for i in keywords:
+            for i in range(len(self.keywords)):
                 for j in para:
-                    if i in j:
+                    if self.keywords.loc[i,'Keywords'] in j:
                         if j in lst:
                             continue
                         lst.append(j)
@@ -307,6 +307,7 @@ class Scrape(webdriver.Chrome):
                     'Funeral Home Street Address': funeral_home_street, 'Funeral Home City': funeral_home_city, 'Funeral Home State': funeral_home_state, 'Funeral Home ZIP Code': funeral_home_zipcode, 'Upcoming Service Name': upcoming_service_name, 'Upcoming Service Date': upcoming_service_date, 'Upcoming Service City': funeral_home_city, 'List of Next of Kin': lonok, 'Link to the deceased person': url}
 
             self.df = self.df.append(rows, ignore_index=True)
+            print(rows)
 
         except Exception as e:
             print(e)
