@@ -71,14 +71,15 @@ class Scrape(webdriver.Chrome):
             
         else:
             
-            select.select_by_value(state)
-            self.state = self.states[state]
+            select.select_by_visible_text(state)
+            self.state = state
 
      # selecting the keywords
     def keyword(self, keyword=''):
         key = self.find_element_by_id(
             'ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolder1_uxSearchWideControl_txtKeyword')
         self.city = keyword
+        key.clear()
         key.send_keys(keyword)
 
     # Selecting the date
@@ -162,9 +163,10 @@ class Scrape(webdriver.Chrome):
 
                 self.result[s.text] = h.get_attribute('href')
                 print("\n")
-        self.close()
+        
 
     def read_result(self, key):
+        
         driver = webdriver.Chrome(options=self.options)
         url = self.result[key]
         print(
@@ -172,7 +174,9 @@ class Scrape(webdriver.Chrome):
         print('')
         try:
             driver.get(url)
-            driver.implicitly_wait(100)
+            driver.implicitly_wait(30)
+            
+
             para = driver.find_element_by_xpath(
                 "//div[@data-component='ObituaryParagraph']").text.split('.\n')
 
